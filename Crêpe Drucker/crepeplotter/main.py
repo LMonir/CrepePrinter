@@ -8,6 +8,7 @@ from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 import usocket as socket
 import json
+from printer import Printer
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
 # Click "Open user guide" on the EV3 extension tab for more information.
@@ -24,6 +25,13 @@ ev3 = EV3Brick()
 # Write your program here.
 ev3.speaker.beep()
 
+printer = Printer(ev3)
+printer.calibrate()
+
+ev3.speaker.beep()
+wait(100)
+ev3.speaker.beep()
+
 # Define the server's host and port
 HOST = ''  # Listen on all available interfaces
 PORT = 80
@@ -38,7 +46,7 @@ addr = ai[0][-1]
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind(addr)
 s.listen(5)
-print("Listening, connect your browser to http://<this_host>:8080/")
+print("Listening, connect your browser to http://<this_host>:80/")
 
 # Listen for incoming connections
 s.listen(1)
@@ -61,24 +69,35 @@ while True:
         h = client_stream.readline()
         if h == b'':
             break
-        print(h)
+        print(h)5
     '''
 
-    data = client_sock.recv(1024)  # Receive up to 1024 bytes of data
+    data = client_sock.recv(65536)  # Receive up to 1024 bytes of data
     if data:
         decoded_data = data.decode('utf-8')
-        #print('Received data: {}'.format(decoded_data))
+        print('Received data: {}'.format(decoded_data))
         lines = decoded_data.split("\r\n")
         anz_lines = len(lines)
         content = lines[anz_lines-1]
         json_object = json.loads(content)
-        gcodes = json_object['gcodes']
-        for e in gcodes:
-            print(e)
-        #client_sock.send(response.encode('utf-8'))
+        print(json_object)
         client_sock.write(CONTENT % counter)
+        client_sock.close()
 
-    client_sock.close()
+        '''
+        gcodes = json_object['gcodes']
+        
+        '''
+        wait(2000)
+        ev3.speaker.beep()
+        wait(100)
+        ev3.speaker.beep()
+        wait(100)
+        ev3.speaker.beep()
+        printer.runGCode(json_object['ip'], int(json_object['port']))
+        printer.calibrate()
+        #client_sock.send(response.encode('utf-8'))
+        
     counter += 1
     print()
 
