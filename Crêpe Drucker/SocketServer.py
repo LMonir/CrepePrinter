@@ -14,10 +14,12 @@ def worker_function(ser):
     ser.shutdown()
 
 def get_next_10_entries(array, current_index):
+    arraylengh = len(array)
     # Überprüfe, ob der aktuelle Index im gültigen Bereich des Arrays liegt
-    if current_index < len(array):
+    print(f"[{current_index}/{arraylengh}]")
+    if current_index < arraylengh:
         # Berechne den Endindex für die nächsten 10 Einträge
-        end_index = min(current_index + 10, len(array))
+        end_index = min(current_index + 50, arraylengh)
         
         # Holen Sie die nächsten 10 Einträge aus dem Array
         next_10_entries = array[current_index:end_index]
@@ -54,7 +56,6 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             json_data = json.dumps(data)
 
         # Sende das JSON als Antwort
-        print(json_data)
         self.wfile.write(json_data.encode('utf-8'))
         if not next_10:
             thread = threading.Thread(target=worker_function, args=(server,))
@@ -66,7 +67,7 @@ class SocketServer:
         global gcodes
         global server
         gcodes = gcodess
-        with socketserver.TCPServer(('', 80), MyHandler) as httpd:
+        with socketserver.TCPServer(('', 8080), MyHandler) as httpd:
             print('Der Server läuft auf Port 80...')
             server = httpd
             # Starte den Server

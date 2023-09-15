@@ -5,11 +5,13 @@ from PIL import Image
 from bluetooth_client import SocketClient
 from SocketServer import SocketServer
 import socket
+import sys
 
 MAX_PIXEL = 202
 roboter = SocketClient("169.254.40.77", 8080)
 gcodes = []
 printing = False
+sys.setrecursionlimit(32450)
 
 def get_own_ip():
     return "169.254.142.213"
@@ -75,8 +77,6 @@ def process_image(image):
         raise Exception(f"Das Bild muss {MAX_PIXEL}x{MAX_PIXEL} Pixel groß sein.")
     
     graph, nodes = generateGraf(image)
-    print(graph)
-    print(nodes)
 
     while len(nodes) > 0:
         visited = set()
@@ -87,7 +87,7 @@ def process_image(image):
     
     json_object = {
         'ip': get_own_ip(),
-        'port': 80
+        'port': 8080
     }
     print(json_object)
     roboter.send_http_request("POST", body=json_object)

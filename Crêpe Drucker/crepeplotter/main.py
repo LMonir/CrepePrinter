@@ -33,13 +33,13 @@ wait(100)
 ev3.speaker.beep()
 
 # Define the server's host and port
-HOST = ''  # Listen on all available interfaces
-PORT = 80
+HOST = '0.0.0.0'  # Listen on all available interfaces
+PORT = 8080
 
 s = socket.socket()
 
-    # Binding to all interfaces - server will be accessible to other hosts!
-ai = socket.getaddrinfo("0.0.0.0", 8080)
+# Binding to all interfaces - server will be accessible to other hosts!
+ai = socket.getaddrinfo(HOST, PORT)
 print("Bind address info:", ai)
 addr = ai[0][-1]
 
@@ -72,7 +72,7 @@ while True:
         print(h)5
     '''
 
-    data = client_sock.recv(65536)  # Receive up to 1024 bytes of data
+    data = client_sock.recv(1024)  # Receive up to 1024 bytes of data
     if data:
         decoded_data = data.decode('utf-8')
         print('Received data: {}'.format(decoded_data))
