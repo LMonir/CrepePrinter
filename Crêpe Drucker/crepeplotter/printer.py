@@ -85,15 +85,18 @@ class Printer:
         if Y > (MAX_Y-UPCAST_Y):
             print("Y ist zu groß: ", Y)
             return
-        diffX = X - self.currX
-        diffY = Y - self.currY
+        targetX = X * self.stepX
+        targetY = Y * self.stepY
 
-        motorX.run_angle(800, diffX*self.stepX, then=Stop.HOLD, wait=False)
-        motorY.run_angle(400, diffY*self.stepY, then=Stop.HOLD, wait=True)
+        motorX.run_target(800, targetX, then=Stop.COAST, wait=False)
+        motorY.run_target(400, targetY, then=Stop.COAST, wait=True)
         self.currX = X
         self.currY = Y
 
     def setPrintState(self, state):
+        if state == 0:
+            motorX.hold()
+            motorY.hold()
         return
 
     def runGCode(self, ip, port):

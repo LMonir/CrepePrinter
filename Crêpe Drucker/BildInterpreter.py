@@ -8,13 +8,14 @@ import socket
 import sys
 
 MAX_PIXEL = 202
-roboter = SocketClient("169.254.40.77", 8080)
+roboter = SocketClient("169.254.156.43", 8080)
 gcodes = []
 printing = False
 sys.setrecursionlimit(32450)
 
 def get_own_ip():
-    return "169.254.142.213"
+    return "192.168.178.48"  #WLAN
+    #return "192.168.178.51" Bluetooth
 
 # Laden Sie das Bild ausgewählt durch den Benutzer
 def load_image():
@@ -106,9 +107,9 @@ def create_gcode(x, y):
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()  # Verstecken Sie das Hauptfenster von tkinter
-
-    print("Bitte wählen Sie ein Bild aus:")
-    load_image()
+    while True:
+        print("Bitte wählen Sie ein Bild aus:")
+        load_image()
 
 
 #G1 ist ein Move Befehl

@@ -6,6 +6,7 @@ from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
+from pybricks.messaging import BluetoothMailboxClient, LogicMailbox
 import usocket as socket
 import json
 from printer import Printer
@@ -21,7 +22,25 @@ Hello #%d from MicroPython!
 
 # Create your objects here.
 ev3 = EV3Brick()
+client = BluetoothMailboxClient()
+client.connect('ev3_5')
+mail = LogicMailbox('print', client)
 
+ev3.light.on(Color.RED)
+ev3.screen.clear()
+ev3.screen.print('CALIBRATING.', sep=' ', end='\n')
+
+mail.send(False)
+mail.wait()
+print(mail.read())
+wait(1000)
+mail.send(True)
+mail.wait()
+print(mail.read())
+wait(1000)
+mail.send(False)
+mail.wait()
+print(mail.read())
 # Write your program here.
 ev3.speaker.beep()
 
@@ -31,6 +50,9 @@ printer.calibrate()
 ev3.speaker.beep()
 wait(100)
 ev3.speaker.beep()
+
+ev3.light.on(Color.GREEN)
+ev3.screen.clear()
 
 # Define the server's host and port
 HOST = '0.0.0.0'  # Listen on all available interfaces
@@ -52,7 +74,8 @@ print("Listening, connect your browser to http://<this_host>:80/")
 s.listen(1)
 
 print('Server is listening on {}:{}'.format(HOST, PORT))
-
+ev3.screen.clear()
+ev3.screen.print('Please upload a\npicture for\nprinting.', sep=' ', end='\n')
 counter = 0
 while True:
     res = s.accept()
@@ -88,6 +111,14 @@ while True:
         gcodes = json_object['gcodes']
         
         '''
+        ev3.light.on(Color.RED)
+        ev3.screen.clear()
+        ev3.screen.print('Printing!!!\nPlease stay back!.', sep=' ', end='\n')
+
+        mail.send(True)
+        mail.wait()
+        print(mail.read())
+
         wait(2000)
         ev3.speaker.beep()
         wait(100)
@@ -96,6 +127,14 @@ while True:
         ev3.speaker.beep()
         printer.runGCode(json_object['ip'], int(json_object['port']))
         printer.calibrate()
+
+        mail.send(False)
+        mail.wait()
+        print(mail.read())
+
+        ev3.light.on(Color.GREEN)
+        ev3.screen.clear()
+        ev3.screen.print('Your crepe is\nready to eat.\n\nUpload a new\npicture.', sep=' ', end='\n')
         #client_sock.send(response.encode('utf-8'))
         
     counter += 1
