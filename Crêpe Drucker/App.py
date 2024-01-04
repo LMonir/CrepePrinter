@@ -5,6 +5,8 @@ import cv2
 from tkinter import filedialog
 import numpy as np
 from Server import Server
+from GCodeGenerator import GCodeGenerator
+import os
 
 class ImageGridApp:
     def __init__(self, root):
@@ -17,6 +19,7 @@ class ImageGridApp:
         self.epsilon = 0.007
 
         file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.bmp *.gif")])
+        file_path = os.path.abspath(file_path)
         self.image = cv2.imread(file_path)
 
         # Konvertieren Sie das Bild in Graustufen
@@ -137,14 +140,14 @@ class ImageGridApp:
         cv2.destroyAllWindows()
 
     def print_images(self):
+        gcodes = []
+        gcodeGenerator = GCodeGenerator()
         for i in range(self.num_images):
             if self.image_state[i]:
                 contour = self.contours[i]
-                for point in contour:
-                    inner = point[0]
-                    x = inner[0]
-                    y = inner[1]
-                    print(inner)
+                gcode = gcodeGenerator.generateGCodeVectorized(contour)
+                gcodes = gcodes + gcode
+        print(gcodes)
         
 
 if __name__ == "__main__":
