@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import cv2
 from tkinter import filedialog
 import numpy as np
+from Server import Server
 
 class ImageGridApp:
     def __init__(self, root):
@@ -12,6 +13,8 @@ class ImageGridApp:
         self.images = []
         self.contours = []
         self.image_state = []
+        self.server = Server()
+        self.epsilon = 0.007
 
         file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.bmp *.gif")])
         self.image = cv2.imread(file_path)
@@ -37,7 +40,7 @@ class ImageGridApp:
             simplified_image = np.zeros_like(self.image)
             area = cv2.contourArea(contour)
             # Approximieren Sie die Kontur mit einer Polygonzugkurve
-            epsilon = 0.005 * cv2.arcLength(contour, True)
+            epsilon = self.epsilon * cv2.arcLength(contour, True)
             approx = cv2.approxPolyDP(contour, epsilon, True)
 
             # Zeichnen Sie die vereinfachte Kontur als Linie oder Polygon auf das Bild
@@ -115,18 +118,14 @@ class ImageGridApp:
         # Scrollen Sie mit dem Mausrad im Canvas
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), 'units')
 
-    def print_images(self):
-        # Hier können Sie die Logik für das Drucken der ausgewählten Bilder implementieren
-        print("Bilder werden gedruckt...")
-
     def auswahl_angucken(self):
         simplified_image = np.zeros_like(self.image)
-        for i in range(len(self.contours)):
+        for i in range(self.num_images):
             if self.image_state[i]:
                 contour = self.contours[i]
                 area = cv2.contourArea(contour)
                 # Approximieren Sie die Kontur mit einer Polygonzugkurve
-                epsilon = 0.005 * cv2.arcLength(contour, True)
+                epsilon = self.epsilon * cv2.arcLength(contour, True)
                 approx = cv2.approxPolyDP(contour, epsilon, True)
 
                 # Zeichnen Sie die vereinfachte Kontur als Linie oder Polygon auf das Bild
@@ -137,8 +136,18 @@ class ImageGridApp:
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+    def print_images(self):
+        for i in range(self.num_images):
+            if self.image_state[i]:
+                contour = self.contours[i]
+                for point in contour:
+                    inner = point[0]
+                    x = inner[0]
+                    y = inner[1]
+                    print(inner)
+        
+
 if __name__ == "__main__":
-    num_images = 6  # Anzahl der Bilder im Grid
     root = tk.Tk()
     app = ImageGridApp(root)
     root.mainloop()

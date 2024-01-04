@@ -2,16 +2,12 @@ import math
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image
-from bluetooth_client import SocketClient
 from SocketServer import SocketServer
-import socket
-import sys
+from Server import Server
 
 MAX_PIXEL = 202
-roboter = SocketClient("169.254.156.43", 8080)
 gcodes = []
 printing = False
-sys.setrecursionlimit(32450)
 
 def get_own_ip():
     return "192.168.178.48"  #WLAN
@@ -86,15 +82,8 @@ def process_image(image):
         dfs(graph, node, visited)
         nodes = [x for x in nodes if x not in visited]
     
-    json_object = {
-        'ip': get_own_ip(),
-        'port': 8080
-    }
-    print(json_object)
-    roboter.send_http_request("POST", body=json_object)
-
-    print(gcodes)
-    server = SocketServer(gcodes)
+    server = Server()
+    server.start_printing(gcodes)
 
 # Überprüfen, ob ein Pixel schwarz ist (R, G, B = 0)
 def is_black(pixel):
