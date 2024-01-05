@@ -148,6 +148,8 @@ class ImageGridApp:
                 gcode = gcodeGenerator.generateGCodeVectorized(contour)
                 gcodes = gcodes + gcode
         print(gcodes)
+        #self.server.start_printing(gcodes)
+
         
 
 if __name__ == "__main__":

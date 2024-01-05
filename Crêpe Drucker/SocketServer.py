@@ -13,21 +13,21 @@ def worker_function(ser):
     print("BEENDE DEN SERVER")
     ser.shutdown()
 
-def get_next_10_entries(array, current_index):
+def get_next_X_entries(array, current_index):
     arraylengh = len(array)
     # Überprüfe, ob der aktuelle Index im gültigen Bereich des Arrays liegt
     print(f"[{current_index}/{arraylengh}]")
     if current_index < arraylengh:
-        # Berechne den Endindex für die nächsten 10 Einträge
-        end_index = min(current_index + 50, arraylengh)
+        # Berechne den Endindex für die nächsten X Einträge
+        end_index = min(current_index + 30, arraylengh)
         
-        # Holen Sie die nächsten 10 Einträge aus dem Array
-        next_10_entries = array[current_index:end_index]
+        # Holen Sie die nächsten X Einträge aus dem Array
+        next_X_entries = array[current_index:end_index]
         
         # Aktualisiere den aktuellen Index für den nächsten Aufruf
         current_index = end_index
         
-        return next_10_entries, current_index
+        return next_X_entries, current_index
     else:
         # Wenn der aktuelle Index außerhalb des Arrays liegt, gib None zurück
         return None, current_index
@@ -39,11 +39,11 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
         global server
         global gcodes
         global pool
-        next_10, current_index = get_next_10_entries(gcodes, current_index)
+        next_X, current_index = get_next_X_entries(gcodes, current_index)
 
-        if next_10:
+        if next_X:
             # Erstelle ein JSON-Datenobjekt
-            data = {'gcodes': next_10}
+            data = {'gcodes': next_X}
             json_data = json.dumps(data)
 
             # Setze den Content-Type auf JSON
@@ -57,7 +57,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 
         # Sende das JSON als Antwort
         self.wfile.write(json_data.encode('utf-8'))
-        if not next_10:
+        if not next_X:
             thread = threading.Thread(target=worker_function, args=(server,))
             thread.start()
 

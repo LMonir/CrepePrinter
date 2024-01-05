@@ -63,18 +63,44 @@ class GCodeGenerator:
                 #print(p0)
                 p0 = p1
         return new_numpy_array
-
-    def numpyToGCode(self, numpyArray):
-        gcodes = []
+    
+    def calcSpeed(self, numpyArray):
+        speed = []
         length = len(numpyArray)
         numpyArray.append(numpyArray[0])
-        gcodes.append(f"G1 {numpyArray[0][0]} {numpyArray[0][1]}")
+        for i in range(0, length):
+            p0 = numpyArray[i]
+            p1 = numpyArray[i+1]
+            v = p1 - p0
+            y_diff = v[0]
+            v_abs = np.linalg.norm(v)
+            alpha = math.asin(y_diff/v_abs)
+            x_speed = round(math.cos(alpha) * 50) + 10
+            y_speed = round(math.sin(alpha) * 50) + 10
+            spe = [abs(x_speed), abs(y_speed)]
+            speed.append(spe)
+        #print(speed)
+        return speed
+
+
+    def numpyToGCode(self, numpyArray):
+        speed = self.calcSpeed(numpyArray)
+        gcodes = []
+        length = len(numpyArray)
+        print(numpyArray)
+        print(length)
+        print(len(speed))
+        vx = 100
+        vy = 100
+        gcodes.append(f"G1 {numpyArray[0][0]} {numpyArray[0][1]} {vx} {vy}")
         gcodes.append("G2 1")
         gcodes.append("G3 500")
-        for i in range(1, length+1):
+        for i in range(1, length):
             x = numpyArray[i][0]
             y = numpyArray[i][1]
-            gcodes.append(f"G1 {x} {y}")
+            vx = speed[i-1][0]
+            vy = speed[i-1][1]
+            gcodes.append(f"G1 {x} {y} {vx} {vy}")
         gcodes.append("G2 0")
         gcodes.append("G3 500")
         return gcodes

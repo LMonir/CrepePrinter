@@ -3,7 +3,7 @@ from SocketServer import SocketServer
 import sys
 
 MAX_PIXEL = 202
-IP_ROBOTER = "169.254.156.43"
+IP_ROBOTER = "192.168.178.51"
 IP_BT = "192.168.178.51"
 IP_WLAN = "192.168.178.48"
 sys.setrecursionlimit(32450)
