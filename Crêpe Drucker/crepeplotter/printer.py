@@ -90,6 +90,8 @@ class Printer:
 
         motorX.run_target(800*vx+30, targetX, then=Stop.COAST, wait=False)
         motorY.run_target(400*vy+30, targetY, then=Stop.COAST, wait=True)
+        while abs(motorX.speed()) > 2:
+            wait(100)
         self.currX = X
         self.currY = Y
 
