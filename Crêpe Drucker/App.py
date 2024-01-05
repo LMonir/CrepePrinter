@@ -148,7 +148,7 @@ class ImageGridApp:
                 gcode = gcodeGenerator.generateGCodeVectorized(contour)
                 gcodes = gcodes + gcode
         print(gcodes)
-        #self.server.start_printing(gcodes)
+        self.server.start_printing(gcodes)
 
         
 

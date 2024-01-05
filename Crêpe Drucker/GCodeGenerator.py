@@ -75,8 +75,8 @@ class GCodeGenerator:
             y_diff = v[0]
             v_abs = np.linalg.norm(v)
             alpha = math.asin(y_diff/v_abs)
-            x_speed = round(math.cos(alpha) * 50) + 10
-            y_speed = round(math.sin(alpha) * 50) + 10
+            x_speed = round(math.cos(alpha) / 2, 2)
+            y_speed = round(math.sin(alpha) / 2, 2)
             spe = [abs(x_speed), abs(y_speed)]
             speed.append(spe)
         #print(speed)

@@ -76,7 +76,7 @@ class Printer:
         print(self.motorX_max, " ", self.stepX)
         print(self.motorY_max, " ", self.stepY)
 
-    def moveTo(self, x, y):
+    def moveTo(self, x, y, vx, vy):
         X = x + UPCAST_X
         Y = y + UPCAST_Y
         if X > (MAX_X-UPCAST_X):
@@ -88,8 +88,8 @@ class Printer:
         targetX = X * self.stepX
         targetY = Y * self.stepY
 
-        motorX.run_target(800, targetX, then=Stop.COAST, wait=False)
-        motorY.run_target(400, targetY, then=Stop.COAST, wait=True)
+        motorX.run_target(800*vx+30, targetX, then=Stop.COAST, wait=False)
+        motorY.run_target(400*vy+30, targetY, then=Stop.COAST, wait=True)
         self.currX = X
         self.currY = Y
 
@@ -107,7 +107,7 @@ class Printer:
                 codeParts = code.split()
                 print(codeParts)
                 if codeParts[0] == "G1":
-                    self.moveTo(int(codeParts[1]), int(codeParts[2]))
+                    self.moveTo(int(codeParts[1]), int(codeParts[2]), float(codeParts[3]), float(codeParts[4]))
                 elif codeParts[0] == "G2":
                     self.setPrintState(int(codeParts[1]))
                 elif codeParts[0] == "G3":
